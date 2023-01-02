@@ -1,25 +1,77 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { useQuery, gql ,useLazyQuery} from "@apollo/client";
 
-function App() {
+const FILMS_QUERY = gql`
+query Missions {
+  missions {
+    name
+    website
+    manufacturers
+    payloads {
+      orbit
+      nationality
+      manufacturer
+    }
+  }
+}
+`;
+const SHIP_QUERY = gql`
+
+query Ships {
+  ships {
+    model
+    name
+    type
+    status
+  }
+}
+`;
+
+const DRAGON_QUERY = gql`
+query Dragons {
+  dragons {
+    name
+    first_flight
+    diameter {
+      feet
+    }
+    launch_payload_mass {
+      lb
+    }
+  }
+}
+
+`
+
+
+export default function App() {
+  const { data, loading, error } = useQuery(FILMS_QUERY);
+ 
+  const { data:ShipData, loading:ShipLoading, error:Shiperror } = useQuery(SHIP_QUERY);
+  
+
+  if (loading) return "Loading...";
+  if (error) return <pre>{error.message}</pre>
+ 
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>SpaceX Launches</h1>
+      <ul>
+        {data.missions.map((launch) => (
+          <li key={launch.id}>{launch.name} {launch.manufacturers} </li>
+        ))}
+      </ul>
+      <ul>
+        {ShipData.ships.map((ship) => (
+          <li>{ship.name}</li>
+        ))}
+      </ul>
+
+      
+     
+     
+
     </div>
   );
 }
-
-export default App;
